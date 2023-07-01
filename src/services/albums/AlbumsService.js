@@ -10,10 +10,10 @@ class AlbumsService {
     this._albumPool = new Pool();
   }
 
-  addAlbum = async ({ name, year }) => {
+  async addAlbum({ name, year }) {
     const id = `album-${nanoid(16)}`;
     const query = {
-      text: 'insert into albums values ($1, $2, $3) returning id',
+      text: 'insert into albums values($1, $2, $3) returning id',
       values: [id, name, year],
     };
     const result = await this._albumPool.query(query);
@@ -22,16 +22,16 @@ class AlbumsService {
       throw new InvariantError('Album gagal ditambahkan.');
     }
     return result.rows[0].id;
-  };
+  }
 
-  getAlbumById = async (id) => {
+  async getAlbumById(id) {
     const albumQuery = {
       text: 'select * from albums where id = $1',
       values: [id],
     };
     const resultAlbum = await this._albumPool.query(albumQuery);
 
-    if (!resultAlbum) {
+    if (!resultAlbum.rows.length) {
       throw new NotFoundError('Album tidak ditemukan.');
     }
     const { name, year } = resultAlbum.rows[0];
@@ -46,9 +46,9 @@ class AlbumsService {
       id, name, year, songs,
     };
     return result;
-  };
+  }
 
-  editAlbumById = async (id, { name, year }) => {
+  async editAlbumById(id, { name, year }) {
     const query = {
       text: 'update albums set name = $1, year = $2 where id = $3 returning id',
       values: [name, year, id],
@@ -58,9 +58,9 @@ class AlbumsService {
     if (!result.rows.length) {
       throw new NotFoundError('Album gagal ditemukan.');
     }
-  };
+  }
 
-  deleteAlbumById = async (id) => {
+  async deleteAlbumById(id) {
     const query = {
       text: 'delete from albums where id = $1',
       values: [id],
@@ -70,7 +70,7 @@ class AlbumsService {
     if (!result.rows.length) {
       throw new NotFoundError('Catatan gagal dihapus. Album tidak ditemukan.');
     }
-  };
+  }
 }
 
 module.exports = AlbumsService;

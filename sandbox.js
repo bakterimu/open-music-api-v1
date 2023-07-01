@@ -1,6 +1,8 @@
 require('dotenv').config();
 const { Pool } = require('pg');
+const { nanoid } = require('nanoid');
 const { mapDBToModel } = require('./src/utils');
+const InvariantError = require('./src/exceptions/invariantError');
 
 const pool = new Pool();
 const getAlbumById = async (id) => {
@@ -24,4 +26,19 @@ const getAlbumById = async (id) => {
   return result.rows;
 };
 
-getAlbumById('haha');
+const addAlbum = async (name, year) => {
+  const id = `album-${nanoid(16)}`;
+  const query = {
+    text: 'insert into albums values($1, $2, $3) returning id',
+    values: [id, name, year],
+  };
+  const result = await pool.query(query);
+  console.log(result);
+
+  if (!result.rows[0].id) {
+    throw new InvariantError('Album gagal ditambahkan.');
+  }
+  return result.rows[0].id;
+};
+
+addAlbum('viva', 2005);

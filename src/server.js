@@ -12,7 +12,7 @@ const start = async () => {
     host: process.env.HOST,
     routes: {
       cors: {
-        origins: ['*'],
+        origin: ['*'],
       },
     },
   });
@@ -44,13 +44,6 @@ const start = async () => {
       if (!response.isServer) {
         return h.continue;
       }
-
-      const newResponse = h.response({
-        status: 'error',
-        message: 'terjadi kegagalan pada server kami',
-      });
-      newResponse.code(500);
-      return newResponse;
     }
 
     // jika bukan error maka lanjut
