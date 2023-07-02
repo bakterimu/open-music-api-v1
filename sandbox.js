@@ -3,6 +3,7 @@ const { Pool } = require('pg');
 const { nanoid } = require('nanoid');
 const { mapDBToModel } = require('./src/utils');
 const InvariantError = require('./src/exceptions/invariantError');
+const NotFoundError = require('./src/exceptions/notFoundError');
 
 const pool = new Pool();
 const getAlbumById = async (id) => {
@@ -41,4 +42,32 @@ const addAlbum = async (name, year) => {
   return result.rows[0].id;
 };
 
-addAlbum('viva', 2005);
+const getSongs = async ({ title, performer }) => {
+  const query = {
+    text: 'select * from songs',
+  };
+  if ((title && !performer) || (!title && performer)) {
+    if (title) {
+      query.text += ' where lower(title) like $1';
+      console.log(query.text);
+      query.values = [`${title}%`];
+    }
+    if (performer) {
+      query.text += " where performer like $1";
+      console.log(query.text);
+      query.values = [`${performer}%`];
+    }
+  } else if (title && performer) {
+    query.text += " where title like $1% and performer like $2%";
+    console.log(query.text);
+    query.values = [title, performer];
+  }
+  const result = await pool.query(query);
+  if (!result.rows.length) {
+    throw new NotFoundError('Lagu tidak ditemukan.');
+  }
+
+  console.log(result.rows.map(mapDBToModel));
+};
+
+getSongs({title: 'fu'});
