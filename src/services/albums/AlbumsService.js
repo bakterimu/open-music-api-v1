@@ -62,7 +62,7 @@ class AlbumsService {
 
   async deleteAlbumById(id) {
     const query = {
-      text: 'delete from albums where id = $1',
+      text: 'delete from albums where id = $1 returning id',
       values: [id],
     };
     const result = await this._albumPool.query(query);
