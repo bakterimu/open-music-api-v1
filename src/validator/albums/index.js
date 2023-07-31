@@ -5,7 +5,7 @@ const AlbumValidator = {
   validateAlbumPayload: (payload) => {
     const validateResult = AlbumPayloadsSchema.validate(payload);
     if (validateResult.error) {
-      throw new InvariantError(validateResult.error);
+      throw new InvariantError(validateResult.error.message);
     }
   },
 };

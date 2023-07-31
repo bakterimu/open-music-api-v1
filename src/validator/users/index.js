@@ -5,7 +5,7 @@ const UserValidator = {
   validateUserPayload: (payload) => {
     const validateResult = UsersPayloadSchema.validate(payload);
     if (validateResult.error) {
-      throw new InvariantError(validateResult.error);
+      throw new InvariantError(validateResult.error.message);
     }
   },
 };
